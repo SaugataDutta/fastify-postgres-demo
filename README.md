@@ -41,5 +41,9 @@ The following secret variables must be defined in GitLab.
 
 | Variable        | Description                                            |
 | --------------- | ------------------------------------------------------ |
+| STAGING_GCP_ACCOUNT_CREDENTIALS | |
+| STAGING_PROJECT_ID | |
+| STAGING_K8_CLUSTER_NAME | |
+| STAGING_K8_CLUSTER_REGION | |
 | DEPLOY_TOKEN    | The deploy token to read the registry during deploy    |
 | DEPLOY_PASSWORD | The deploy password to read the registry during deploy |

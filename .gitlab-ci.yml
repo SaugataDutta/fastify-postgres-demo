@@ -1,18 +1,23 @@
+---
 include:
   - 'https://ci-reuse.fala.cl/lint/markdown/.include.yml'
   - 'https://ci-reuse.fala.cl/lint/yaml/.include.yml'
   - 'https://ci-reuse.fala.cl/build/docker/.include.yml'
   - 'https://ci-reuse.fala.cl/lint/helm/.include.yml'
+  - 'https://ci-reuse.fala.cl/deploy/gcloud/helm/.include.yml'
 
 variables:
+  CI_DEBUG_TRACE: "true"
   YAMLLINT_INPUT: ".gitlab-ci.yml"
   HELM_PATH: helm/fastify-demo
+  HELM_RELEASE_NAME: fastify-demo
 
 stages:
   - lint
   - build
   - test
   - audit
+  - deploy
 
 node:
   stage: lint
@@ -42,3 +47,22 @@ node.js:
   script:
     - npm run coverage
   coverage: /^Statements\s*:\s*([^%]+)/
+
+################################
+# environment: staging
+################################
+deploy_staging:
+  extends: .helm_deploy
+  environment:
+    name: staging
+  variables:
+    GCP_ACCOUNT_CREDENTIALS: ${STAGING_GCP_ACCOUNT_CREDENTIALS}
+    PROJECT_ID: ${STAGING_PROJECT_ID}
+    K8_CLUSTER_NAME: ${STAGING_K8_CLUSTER_NAME}
+    K8_CLUSTER_REGION: ${STAGING_K8_CLUSTER_REGION}
+    K8_NAMESPACE: demo
+    HELM_OPTS: --values helm/fastify-demo/staging-values.yaml
+      --set-string image.pullSecret.registry=${CI_REGISTRY}
+      --set-string image.pullSecret.username=${DEPLOY_TOKEN}
+      --set-string image.pullSecret.password=${DEPLOY_PASSWORD}
+  when: manual

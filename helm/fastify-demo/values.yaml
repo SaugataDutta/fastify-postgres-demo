@@ -1,17 +1,23 @@
 # Default values for fastify-demo.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+---
 replicaCount: 3
 
 version: v1
 
 image:
-  repository: r.fala.cl/ci-reuse/templates/fastify-demo
+  repository: r.fala.cl/tottus/orion/fastify-demo
   tag: latest
   pullPolicy: Always
+  pullSecret:
+    enabled: false
+    name: docker-reg
+    registry: https://hub.docker.com
+    username: username
+    password: password
   annotations:
-    prometheus.io/scrape: 'true'
+    prometheus.io/scrape: "true"
 
 container:
   host: 0.0.0.0
@@ -27,10 +33,10 @@ ingress:
   path: /
   hosts:
     - example.com
-  tls:
-   - secretName: example-com-tls
-     hosts:
-       - examples.com
+  tls: []
+  # - secretName: example-com-tls
+  #   hosts:
+  #     - examples.com
 
 resources:
   limits:
@@ -45,7 +51,6 @@ autoscaling:
   minReplicas: 3
   maxReplicas: 10
   targetAverageUtilization: 75
-
 
 nodeSelector: {}
 
