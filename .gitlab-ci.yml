@@ -1,0 +1,44 @@
+include:
+  - 'https://ci-reuse.fala.cl/lint/markdown/.include.yml'
+  - 'https://ci-reuse.fala.cl/lint/yaml/.include.yml'
+  - 'https://ci-reuse.fala.cl/build/docker/.include.yml'
+  - 'https://ci-reuse.fala.cl/lint/helm/.include.yml'
+
+variables:
+  YAMLLINT_INPUT: ".gitlab-ci.yml"
+  HELM_PATH: helm/fastify-demo
+
+stages:
+  - lint
+  - build
+  - test
+  - audit
+
+node:
+  stage: lint
+  image: mhart/alpine-node:10
+  cache:
+    paths:
+      - node_modules
+  before_script:
+    - npm install --no-audit
+  script:
+    - npm run lint
+
+npm:
+  stage: audit
+  cache:
+    paths:
+      - node_modules
+  image: mhart/alpine-node:10
+  script:
+    - npm audit
+
+node.js:
+  stage: test
+  image: mhart/alpine-node:10
+  before_script:
+    - npm install --no-audit
+  script:
+    - npm run coverage
+  coverage: /^Statements\s*:\s*([^%]+)/

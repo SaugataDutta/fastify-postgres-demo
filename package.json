@@ -1,0 +1,55 @@
+{
+  "name": "fastify-demo",
+  "version": "1.0.0",
+  "description": "fastify template",
+  "main": "index.js",
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "fastify": "^1.13.0",
+    "fastify-env": "^0.6.1",
+    "fastify-plugin": "^1.2.1",
+    "prom-client": "^11.2.0"
+  },
+  "engines": {
+    "node": ">=10.*"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "devDependencies": {
+    "eslint": "^5.0.0",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-prettier": "^3.0.0",
+    "pino-pretty": "^2.2.4",
+    "prettier-eslint": "^8.8.2",
+    "tap": "^12.1.0",
+    "tap-spec": "^5.0.0"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": [
+      "plugin:prettier/recommended",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 2017
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/*",
+    "coverage/*",
+    ".nyc_output/*"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "start": "node index server start | pino-pretty -c -t HH:MM:ss.l",
+    "test": "LOG_LEVEL=silent tap ./test/**/*.js --reporter spec",
+    "coverage": "LOG_LEVEL=silent tap ./test/**/*.js --reporter spec --coverage --coverage-report=text-summary --no-browser"
+  }
+}
