@@ -4,8 +4,9 @@ const server = require("../../../lib/server");
 
 tap.test("health api", t => {
   t.plan(1);
-  t.test("when i make a http get to /health", assert => {
+  t.test("when i make a http get to /health", tc => {
     const fastify = server();
+    tc.tearDown(() => fastify.close());
     fastify.inject(
       {
         method: "GET",
@@ -13,13 +14,12 @@ tap.test("health api", t => {
         accept: "application/json"
       },
       (err, response) => {
-        assert.error(err, "it should not return an error");
-        assert.strictEqual(response.statusCode, 200, "it should return 200");
+        tc.error(err, "it should not return an error");
+        tc.strictEqual(response.statusCode, 200, "it should return 200");
 
         const json = JSON.parse(response.body);
-        assert.ok(json.name, "it should include name attribute");
-        assert.ok(json.version, "it should include version attribute");
-        assert.end();
+        tc.ok(json.status, "it should include status attribute");
+        tc.end();
       }
     );
   });

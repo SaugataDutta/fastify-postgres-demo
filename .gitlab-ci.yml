@@ -7,7 +7,6 @@ include:
   - 'https://ci-reuse.fala.cl/deploy/gcloud/helm/.include.yml'
 
 variables:
-  CI_DEBUG_TRACE: "true"
   YAMLLINT_INPUT: ".gitlab-ci.yml"
   HELM_PATH: helm/fastify-demo
   HELM_RELEASE_NAME: fastify-demo
@@ -56,13 +55,16 @@ deploy_staging:
   environment:
     name: staging
   variables:
-    GCP_ACCOUNT_CREDENTIALS: ${STAGING_GCP_ACCOUNT_CREDENTIALS}
-    PROJECT_ID: ${STAGING_PROJECT_ID}
-    K8_CLUSTER_NAME: ${STAGING_K8_CLUSTER_NAME}
-    K8_CLUSTER_REGION: ${STAGING_K8_CLUSTER_REGION}
-    K8_NAMESPACE: demo
     HELM_OPTS: --values helm/fastify-demo/staging-values.yaml
       --set-string image.pullSecret.registry=${CI_REGISTRY}
       --set-string image.pullSecret.username=${DEPLOY_TOKEN}
       --set-string image.pullSecret.password=${DEPLOY_PASSWORD}
+  before_script:
+    - echo ${GCP_ACCOUNT_CREDENTIALS} > account.json
+    - gcloud auth activate-service-account --key-file=account.json
+      --project=${PROJECT_ID}
+    - gcloud container clusters get-credentials ${K8_CLUSTER_NAME}
+      --region ${K8_CLUSTER_REGION}
+    - kubectl label namespace ${K8_NAMESPACE} istio-injection=enabled
+      --overwrite
   when: manual
